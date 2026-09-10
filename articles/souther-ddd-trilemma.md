@@ -1,5 +1,5 @@
 ---
-title: "ドメインモデル実装におけるトリレンマに対するSoutherの答え"
+title: "ドメインモデル実装におけるトリレンマに対するSoutherの回答"
 type: "tech" # tech: 技術記事 / idea: アイデア
 emoji: "🦹🏼"
 topics: ["Souther"]
