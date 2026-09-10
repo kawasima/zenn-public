@@ -3,7 +3,7 @@ title: "ドメインモデル貧血症のトリレンマをSoutherで解く"
 type: "tech" # tech: 技術記事 / idea: アイデア
 emoji: "🦹🏼"
 topics: ["Souther"]
-published: false
+published: true
 ---
 
 [ドメインモデル貧血症はなぜ生まれるのか — Decision パターンで DDD トリレンマを解く](https://zenn.dev/tellernovel_inc/articles/0193eb68cabb6e) は [Domain model purity vs. domain model completeness (DDD Trilemma)](https://enterprisecraftsmanship.com/posts/domain-model-purity-completeness/)を非常に分かりやすく解説し、かつGoでこの循環を解消する方法として、domainの関数が「許可」「拒否」「まだ終わっていない、これを取ってきてほしい」の3種類を返すDecisionパターンを示している良い記事だと思いました。
@@ -427,9 +427,9 @@ adequacyが`satisfied`であれば、`fake`にはドメインモデルの検証�
 | 仕組み | 記述、検証するもの |
 | --- | --- |
 | behaviorのシグネチャ | 入力と、結果として現れうる型 |
-| `ensures` | 入力と出力の間に常に必要な関係 |
+| `ensures` | 入力と出力の間に常に必要な関係 (事後条件) |
 | `example` | 具体的な入力に対して期待する結果 |
-| adequacy | exampleが実装の分岐や入力領域をどこまで押さえているか |
+| adequacy | exampleが実装の分岐や入力領域をどこまでカバーしているか |
 | `fake` | Injected behaviorについて、モデルが必要とする入力と答え |
 | Java側のテスト | 外部実装がexampleやfakeと同じ結果を返すか |
 
