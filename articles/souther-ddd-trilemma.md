@@ -1,5 +1,5 @@
 ---
-title: "ドメインモデル貧血症のトリレンマをSoutherで解く"
+title: "ドメインモデル実装におけるトリレンマに対するSoutherの答え"
 type: "tech" # tech: 技術記事 / idea: アイデア
 emoji: "🦹🏼"
 topics: ["Souther"]
