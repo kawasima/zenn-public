@@ -1,6 +1,7 @@
 ---
 title: "ドメインモデル貧血症のトリレンマをSoutherで解く"
 type: "tech" # tech: 技術記事 / idea: アイデア
+emoji: "🦹🏼"
 topics: ["Souther"]
 published: false
 ---
@@ -121,7 +122,7 @@ Southerで記述した`let read`の判断手順は、依存するbehaviorの答�
 
 たとえば、単に
 
-```
+```elm
 UserId -> List<Follower>
 ```
 
@@ -129,7 +130,7 @@ UserId -> List<Follower>
 
 Southerでは、たとえば次のように書きます。
 
-```
+```elm
 behavior myFollower : (userId: UserId) -> List<Follower>
     ensures userId = value.followeeId
 ```
@@ -161,7 +162,7 @@ Southerの言語モデルには、業務上の結果とは別に投げられる�
 
 今回の `read` が返しうる結果は、次の2つだけです。
 
-```
+```elm
 behavior read : (story: Story, reader: UserId) -> Allowed | Refused
 
 data RefusalReason = FollowerRequired | PurchaseRequired
@@ -179,20 +180,13 @@ data Refused = {
 
 もしこれを例外で表現すると、たとえば表面上は
 
-```
+```elm
 (Story, UserId) -> Allowed
 ```
 
-のように見えていても、実際には裏側で
+のように見えていても、実際には裏側で `FollowerRequiredException` や `PurchaseRequiredException` が発生することになります。そうなると、`read` が実際に何を起こしうるのかはシグネチャだけでは分かりません。
 
-```
-FollowerRequiredException
-PurchaseRequiredException
-```
-
-が発生することになります。そうなると、`read` が実際に何を起こしうるのかはシグネチャだけでは分かりません。
-
-```
+```elm
 Allowed | Refused
 ```
 
@@ -200,18 +194,11 @@ Allowed | Refused
 
 これは先ほど書いた「振る舞いの入力と出力が明示されていること」の続きでもあります。
 
-Southerが重視しているのは、単に処理が例外を投げないことではなく、
-
-```
-どういう入力を受け取り
-どういう結果を返しうるのか
-```
-
-を振る舞いの型の外に逃がさないことです。
+Southerが重視しているのは、単に処理が例外を投げないことではなく、どういう入力を受け取りどういう結果を返しうるのかを振る舞いの型の外に逃がさないことです。
 
 一方で、`read` が依存している次の3つは少し性質が違います。
 
-```
+```elm
 behavior followership : (reader: UserId, author: UserId) -> Follower | NotFollower
 
 behavior membership : (reader: UserId) -> Vip | Regular
@@ -221,21 +208,13 @@ behavior purchase : (reader: UserId, story: StoryId) -> Purchased | NotPurchased
 
 これらはDBやキャッシュなど、ドメインモデルの外から取得される事実です。
 
-たとえば `followership` の実装がDBを読んでいるとして、そのDBが落ちることは当然あります。しかし、そのときに
-
-```
-DatabaseUnavailable
-QueryTimeout
-ConnectionClosed
-```
-
-のような結果を `Follower | NotFollower` に混ぜることはしません。
+たとえば `followership` の実装がDBを読んでいるとして、そのDBが落ちることは当然あります。しかし、そのときに `DatabaseUnavailable` や `QueryTimeout` のような結果を `Follower | NotFollower` に混ぜることはしません。
 
 なぜなら、それらは「reader と author のフォロー関係が何であるか」という業務上の答えではないからです。
 
 `followership` がモデルの内側へ持ち込むのは、あくまで
 
-```
+```elm
 Follower | NotFollower
 ```
 
@@ -253,10 +232,10 @@ DBからどう取得するか、失敗したらリトライするのか、タイ
 
 `read` の中では、
 
-```
+```elm
 match followership(reader, story.author) with
-| Follower -> ...
-| NotFollower -> ...
+  | Follower -> ...
+  | NotFollower -> ...
 ```
 
 と書けばよく、そこに「DB取得に失敗した場合」という第3のケースは存在しません。
@@ -265,16 +244,14 @@ match followership(reader, story.author) with
 
 そのため `read` が扱っているのは最初から最後まで、
 
-```
-作者本人か
-公開範囲は何か
-フォローしているか
-無料か有料か
-VIPか
-購入済みか
-```
+- 作者本人か
+- 公開範囲は何か
+- フォローしているか
+- 無料か有料か
+- VIPか
+- 購入済みか
 
-という業務の言葉だけになります。
+という業務の言語だけになります。
 
 Southerに例外がないことの意義は、単に例外処理を書かなくてよいことではありません。
 
